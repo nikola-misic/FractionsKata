@@ -1,9 +1,6 @@
 namespace FractionsKata
 {
-    using System.Xml.Xsl;
-    using Microsoft.VisualStudio.TestPlatform.ObjectModel;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TestResult = Microsoft.VisualStudio.TestTools.UnitTesting.TestResult;
 
     [TestClass]
     public class FractionTest
