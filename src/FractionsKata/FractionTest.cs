@@ -2,7 +2,6 @@ namespace FractionsKata
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NuGet.Frameworks;
 
     [TestClass]
     public class FractionTest
@@ -17,7 +16,7 @@ namespace FractionsKata
             var result = fraction.Multiply(new Fraction(2));
 
             //assert
-            Assert.AreEqual(2, result.numerator);
+            Assert.AreEqual(new Fraction(2), result);
         }
 
         [TestMethod]
@@ -30,8 +29,7 @@ namespace FractionsKata
             var result = left.Multiply(new Fraction(5));
 
             //assert
-            Assert.AreEqual(5, result.numerator);
-            Assert.AreEqual(3, result.denominator);
+            Assert.AreEqual(new Fraction(5, 3), result);
         }
 
         [TestMethod]
@@ -45,8 +43,7 @@ namespace FractionsKata
             var result = left.Multiply(right);
 
             //assert
-            Assert.AreEqual(8, result.numerator);
-            Assert.AreEqual(30, result.denominator);
+            Assert.AreEqual(new Fraction(8, 30), result);
         }
 
         // 2 / 1 = 2
@@ -58,8 +55,7 @@ namespace FractionsKata
 
             var result = left.Divide(right);
 
-            Assert.AreEqual(2, result.numerator);
-            Assert.AreEqual(1, result.denominator);
+            Assert.AreEqual(new Fraction(2, 1), result);
         }
 
         // 1/3 / 1/5 = 5/3
@@ -71,8 +67,7 @@ namespace FractionsKata
 
             var result = left.Divide(right);
 
-            Assert.AreEqual(5, result.numerator);
-            Assert.AreEqual(3, result.denominator);
+            Assert.AreEqual(new Fraction(5, 3), result);
         }
 
         // 1/5 / 1/3 = 3/5
@@ -84,8 +79,7 @@ namespace FractionsKata
 
             var result = left.Divide(right);
 
-            Assert.AreEqual(3, result.numerator);
-            Assert.AreEqual(5, result.denominator);
+            Assert.AreEqual(new Fraction(3, 5), result);
         }
         
         // 1 -> "1"
@@ -205,61 +199,101 @@ namespace FractionsKata
         {
             Assert.AreEqual(new Fraction(12, 9), new Fraction(4, 3));
         }
-    }
-
-    public class Fraction
-    {
-        public int numerator;
-        public int denominator;
         
-        public Fraction(int numerator)
+        // 1 == 1
+        // 2/1 == 2
+        // 2/4 == 1/2
+        // 1 != 2
+        [TestMethod]
+        public void GetHashCodeTests()
         {
-            this.numerator = numerator;
-            this.denominator = 1;
+            Assert.AreEqual(new Fraction(1).GetHashCode(), new Fraction(1).GetHashCode());
+            Assert.AreEqual(new Fraction(2, 1).GetHashCode(), new Fraction(2).GetHashCode());
+            Assert.AreEqual(new Fraction(1, 2).GetHashCode(), new Fraction(1, 2).GetHashCode());
+            Assert.AreNotEqual(new Fraction(1, 2).GetHashCode(), new Fraction(1, 3).GetHashCode());
+            Assert.AreEqual(new Fraction(2, 4).GetHashCode(), new Fraction(1, 2).GetHashCode());
+            Assert.AreNotEqual(new Fraction(1).GetHashCode(), new Fraction(2).GetHashCode());
         }
         
-        public Fraction(int numerator, int denominator)
+        
+        // 1/1 + 1/1 = 2/1
+        [TestMethod]
+        public void OnePlusOneEqualsTwo()
         {
-            this.numerator = numerator;
-            this.denominator = denominator;
-        }
+            var left = new Fraction(1);
+            var right = new Fraction(1);
 
-        public Fraction Multiply(Fraction right)
-        {
-            return new Fraction(this.numerator * right.numerator, this.denominator * right.denominator);
-        }
-
-        public Fraction Divide(Fraction other)
-        {
-            return new Fraction(this.numerator * other.denominator, this.denominator * other.numerator);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Fraction other)
-            {
-                return this.numerator * other.denominator == other.numerator * this.denominator;
-            }
+            var result = left.Add(right);
             
-            return false;
-        }
-
-        public override string ToString()
-        {
-            if (this.numerator == 0)
-            {
-                return "0";
-            }
-
-            if (this.denominator == 1) return this.numerator.ToString();
-            
-            string sign = this.numerator * this.denominator < 0 ? "-" : "";
-            return $"{sign}{Math.Abs(this.numerator)}/{Math.Abs(this.denominator)}";
+            Assert.AreEqual(new Fraction(2), result);
         }
         
-        //Divide
-        //Add
-        //Substract
-        //Equals
+        //1/3 + 1/3 == 2/3
+        [TestMethod]
+        public void OneThirdPlusOneThirdsEqualsTwoThirds()
+        {
+            var left = new Fraction(1, 3);
+            var right = new Fraction(1, 3);
+
+            var result = left.Add(right);
+            
+            Assert.AreEqual(new Fraction(2, 3), result);
+        }
+
+        // 1/5 + 1/2 = 7/10
+        [TestMethod]
+        public void OneFifthPlusOneHalfEqualsOneTenth()
+        {
+            var left = new Fraction(1, 5);
+            var right = new Fraction(1, 2);
+
+            var result = left.Add(right);
+            
+            Assert.AreEqual(new Fraction(7, 10), result);
+        }
+        
+        
+        // 5 - 2 = 3
+        [TestMethod]
+        public void FiveMinusTwoEqualsThree()
+        {
+            var left = new Fraction(5);
+            var right = new Fraction(2);
+
+            var result = left.Subtract(right);
+            
+            Assert.AreEqual(new Fraction(3), result);
+        }
+        
+        // 4/5 - 1/5 = 3/5
+        [TestMethod]
+        public void FourFifthsMinusOneFifthEqualsThreeFifths()
+        {
+            var left = new Fraction(4, 5);
+            var right = new Fraction(1, 5);
+
+            var result = left.Subtract(right);
+            
+            Assert.AreEqual(new Fraction(3, 5), result);
+        }
+        
+        // 1/2 - 1/5 = 3/10
+        [TestMethod]
+        public void OneHalfMinusOneFifthEqualsThreeTenths()
+        {
+            var left = new Fraction(1, 2);
+            var right = new Fraction(1, 5);
+
+            var result = left.Subtract(right);
+            
+            Assert.AreEqual(new Fraction(3, 10), result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ZeroDenominatorThrowsException()
+        {
+            new Fraction(1, 0);
+        }
     }
 }
